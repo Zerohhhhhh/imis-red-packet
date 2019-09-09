@@ -6,12 +6,12 @@ import org.mybatis.spring.mapper.MapperScannerConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.aspectj.EnableSpringConfigured;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.TransactionManagementConfigurer;
 
 import javax.sql.DataSource;
@@ -19,11 +19,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.Properties;
 
+/**
+ * @author Leven
+ * @date 2019/9/9
+ */
 @Configuration
-@EnableSpringConfigured
+@EnableTransactionManagement
 @ComponentScan("edu.gdut.imis")
 public class ApplicationConfig implements TransactionManagementConfigurer {
-
 
     /**
      * 配置dataSource
@@ -34,7 +37,8 @@ public class ApplicationConfig implements TransactionManagementConfigurer {
         Properties properties = new Properties();
         //加载jdbc.properties文件
         try {
-            properties.load(new FileInputStream(new File("resource/jdbc.properties")));
+            properties.load(new FileInputStream(
+                    new File("D:\\workspace-study\\course\\imis-red-packet\\src\\main\\resources\\resource\\jdbc.properties")));
             dataSource = DruidDataSourceFactory.createDataSource(properties);
         } catch (Exception e) {
             e.printStackTrace();
@@ -46,10 +50,10 @@ public class ApplicationConfig implements TransactionManagementConfigurer {
      * 配置sqlSessionFactory
      */
     @Bean(name = "sqlSessionFactory")
-    public SqlSessionFactoryBean sqlSessionFactory() throws Exception {
+    public SqlSessionFactoryBean sqlSessionFactory() {
         SqlSessionFactoryBean sqlSessionFactory = new SqlSessionFactoryBean();
         sqlSessionFactory.setDataSource(dataSource());
-        Resource resource = new ClassPathResource("classpath:mybatis/mybatis-config.xml");
+        Resource resource = new ClassPathResource("mybatis/mybatis-config.xml");
         sqlSessionFactory.setConfigLocation(resource);
         return sqlSessionFactory;
     }
